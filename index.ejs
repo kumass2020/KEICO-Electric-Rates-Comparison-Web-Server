@@ -25,6 +25,95 @@
     </symbol>
     </svg>
 
+    <!-- line multiple chart -->
+    <canvas id="cMultiLineChart"></canvas>
+    <br><hr>
+    <script>
+        var borderColorArray = ['rgba(255, 99, 132, 1)', 
+                                'rgba(54, 162, 235, 1)', 
+                                'rgba(50, 220, 20, 1)',
+                                'rgba(85, 217, 194, 1)' ]
+        var Chart_ctx = document.getElementById('cMultiLineChart').getContext('2d');
+
+        Chart_config = {
+            // plugins: [ChartDataLabels],
+            type: 'line',
+            data: {
+                labels: [
+                    'January',
+                    'February',
+                    'March',
+                    'April',
+                    'May',
+                    'June',
+                    'July',
+                    'August',
+                    'September',
+                    'October',
+                    'November',
+                    'December',
+                ],
+                
+                datasets: [
+                    <% for(var i=0; i<result.length; i++) { %>
+                    {
+                        // var i = <%= i %>;
+                        // label: 'Group ' + <%= i.toString() %>,
+                        label: `<%= result[i].rates_title; %>`,
+                        backgroundColor: 'rgb(255, 99, 132)',
+                        borderColor: 'rgb(255, 99, 132)',
+                        data: [<%= result[i].result_list %>],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)', 
+                        borderColor: borderColorArray[<%= i %>], 
+                        borderWidth: 3, 
+                        datalabels: { 
+                            labels: { 
+                                value: { 
+                                    align: 'top', 
+                                    backgroundColor: function(ctx) { 
+                                        var value = ctx.dataset.data[ctx.dataIndex]; 
+                                        return value > 0 ? ctx.dataset.backgroundColor : null; 
+                                    }, 
+                                    borderWidth: 2, 
+                                    borderRadius: 4, 
+                                    color: function(ctx) { 
+                                        var value = ctx.dataset.data[ctx.dataIndex]; 
+                                        return value > 0 ? 'black' : null; }, padding: 4 
+                                } 
+                            } 
+                        }
+
+                    },
+                    <% } %>
+                ]
+                
+            },
+            options: {
+                responsive: true, 
+                scales: { 
+                    y: { 
+                        beginAtZero: true 
+                    } 
+                }, 
+                plugins: { 
+                    legend: { 
+                        position: 'left', 
+                    }, 
+                    title: { 
+                        display: true, 
+                        text: '연간 요금 비교', 
+                        font: { 
+                            size: 30 
+                        } 
+                    } 
+                } 
+            }
+        }
+        
+        // Create Chart
+        var MultiLineChart = new Chart(Chart_ctx, Chart_config);
+    </script>
+
     <script>
         const labels = [
             'January',
@@ -45,13 +134,15 @@
     <% for(var i=0; i<result.length; i++) { %>
         <% var chartName = "chart" + i.toString() %>
         <% var myChartName = "myChart" + i.toString() %>
-            <div class="alert alert-info" role="alert"><b>
-                <% if (i == 0) { %>
-                    현재요금: <%= result[i].rates_title; %>
-                <% } else { %> 
-                    비교요금: <%= result[i].rates_title; %>
-                <% } %> 
-            </b></div>
+            <div class="alert alert-info" role="alert">
+                <b>
+                    <% if (i == 0) { %>
+                        현재요금: <%= result[i].rates_title; %>
+                    <% } else { %> 
+                        비교요금: <%= result[i].rates_title; %>
+                    <% } %> 
+                </b>
+            </div>
 
             <!-- <%= result[i].result_list; %> -->
             
@@ -83,7 +174,7 @@
                 backgroundColor: 'rgb(255, 99, 132)',
                 borderColor: 'rgb(255, 99, 132)',
                 data: [<%= result[i].result_list %>],
-                }]
+            }]
             },
 
                 options: {}
