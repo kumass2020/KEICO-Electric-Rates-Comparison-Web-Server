@@ -25,9 +25,41 @@
     </symbol>
     </svg>
 
+    <% 
+        var min_sum = 2147000000;
+        var min_index = 0;
+    %>
+
     <!-- line multiple chart -->
     <canvas id="cMultiLineChart"></canvas>
-    <br><hr>
+    <div class="alert alert-info" role="alert">
+        최적 요금제는 <b><span id="min_title"></span></b>로, 연요금은 <b><span id="min_sum"></span>원</b>으로 예상됩니다.
+    </div>
+    <hr>
+
+    <h4>월별 사용량 예측 데이터</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>월</th>
+                <th>경부하(kW)</th>
+                <th>중간부하(kW)</th>
+                <th>최대부하(kW)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(var i=0; i<12; i++) {%>
+                <tr>
+                    <td><%= i+1 %>월</td>
+                    <td><%= result[0].used_amount_list[i][0].toFixed(3) %></td>
+                    <td><%= result[0].used_amount_list[i][1].toFixed(3) %></td>
+                    <td><%= result[0].used_amount_list[i][2].toFixed(3) %></td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+    <hr>
+
     <script>
         var borderColorArray = ['rgba(255, 99, 132, 1)', 
                                 'rgba(54, 162, 235, 1)', 
@@ -150,11 +182,15 @@
                 const sum = result[i].result_list.reduce((stack, e1) => {
                     return stack + e1;
                 }, 0);
+                if(min_sum > sum) {
+                    min_sum = sum
+                    min_index = i
+                }
             %>
             <div class="alert alert-success d-flex align-items-center" role="alert">
             <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
             <div>
-                총 금액은 <b><%= sum %>원</b>입니다.
+                총 금액은 <b><%= sum.toLocaleString('ko-KR') %>원</b>입니다.
             </div>
             </div>
         <div>
@@ -183,6 +219,10 @@
         </script>
     <br><br><hr>
     <% } %>
+    <script>
+        document.getElementById("min_title").innerHTML='<%= result[min_index].rates_title %>';
+        document.getElementById("min_sum").innerHTML='<%= min_sum.toLocaleString("ko-KR") %>';
+    </script>
 </div>
 
 
